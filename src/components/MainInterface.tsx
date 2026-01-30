@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Mic, Hand, Terminal, Grid3x3, Brain, Gauge, Shield, Target, Satellite, Code, Bot, Server, Palette, Workflow, BarChart3, ScrollText, Settings, Cpu, Users, Blocks, Puzzle, Activity, Stethoscope, Store, Merge, Sparkles, Cloud, CodeSquare, TestTube2, Bug, Zap, Network, Database, Rocket, Sparkles as SparklesIcon, Users as UsersIcon, TreePine, Wrench, Code2, TrendingUp, Scale, Plug, Workflow as WorkflowIcon, Eye, Palette as PaletteIcon, Brain as BrainIcon, Shield as ShieldIcon, FlaskConical, Accessibility, Building2, Layers } from 'lucide-react';
+import { Mic, Hand, Terminal, Grid3x3, Brain, Gauge, Shield, Target, Satellite, Code, Bot, Server, Palette, Workflow, BarChart3, ScrollText, Settings, Cpu, Users, Blocks, Puzzle, Activity, Stethoscope, Store, Merge, Sparkles, Cloud, CodeSquare, TestTube2, Bug, Zap, Network, Database, Rocket, Sparkles as SparklesIcon, Users as UsersIcon, TreePine, Wrench, Code2, TrendingUp, Scale, Plug, Workflow as WorkflowIcon, Eye, Palette as PaletteIcon, Brain as BrainIcon, Shield as ShieldIcon, FlaskConical, Accessibility, Building2, Layers, LayoutTemplate } from 'lucide-react';
 import { ScanningGrid } from './ScanningGrid';
 import { HUDInterface } from './HUDInterface';
 import { SystemDiagnostics } from './SystemDiagnostics';
@@ -86,6 +86,7 @@ import { TabSearch, TabInfo as TabSearchInfo } from './TabSearch';
 import { Dashboard } from './Dashboard';
 import { FavoritesBar, FavoriteTab } from './FavoritesBar';
 import { TabCategoryView } from './TabCategoryView';
+import { PremiumUITemplate } from './PremiumUITemplate';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 import { toast } from 'sonner@2.0.3';
@@ -171,6 +172,7 @@ export function MainInterface({
   // Comprehensive tab list for search
   const allTabs: TabSearchInfo[] = [
     { id: 'dashboard', label: 'Dashboard', value: 'dashboard', category: 'Core', description: 'Home and overview', icon: <Grid3x3 className="w-4 h-4" />, shortcut: '⌘H' },
+    { id: 'ui-template', label: 'UI Template', value: 'ui-template', category: 'Design', description: 'Premium UI kit & app shell', icon: <LayoutTemplate className="w-4 h-4" />, shortcut: '⌘U' },
     { id: 'tab-browser', label: 'Tab Browser', value: 'tab-browser', category: 'Core', description: 'Browse all tabs by category', icon: <Layers className="w-4 h-4" />, shortcut: '⌘B' },
     { id: 'assistant', label: 'Assistant', value: 'assistant', category: 'Core', description: 'Voice AI Assistant', icon: <Terminal className="w-4 h-4" />, shortcut: '⌘A' },
     { id: 'analytics', label: 'Analytics', value: 'analytics', category: 'Analytics', description: 'Predictive Analytics', icon: <Gauge className="w-4 h-4" />, shortcut: '⌘D' },
@@ -365,6 +367,25 @@ export function MainInterface({
                     </TooltipTrigger>
                     <TooltipContent className="bg-black/90 border-cyan-500/50">
                       <p>Categorized Tab Browser • ⌘⇧B</p>
+                    </TooltipContent>
+                  </Tooltip>
+
+                  {/* UI Template */}
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div>
+                        <TabsTrigger
+                          value="ui-template"
+                          className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500/30 data-[state=active]:to-blue-500/30 data-[state=active]:text-cyan-300 data-[state=active]:shadow-lg data-[state=active]:shadow-cyan-500/50 hover:bg-cyan-500/10 transition-all duration-300 relative group"
+                        >
+                          <LayoutTemplate className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
+                          <span>UI Kit</span>
+                          <div className="absolute -top-1 -right-1 w-2 h-2 bg-cyan-400 rounded-full animate-pulse opacity-0 group-data-[state=active]:opacity-100" />
+                        </TabsTrigger>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent className="bg-black/90 border-cyan-500/50">
+                      <p>Premium UI Template • ⌘U</p>
                     </TooltipContent>
                   </Tooltip>
 
@@ -1391,7 +1412,11 @@ export function MainInterface({
 
           {/* Tab Content */}
           <TabsContent value="dashboard" className="mt-0">
-            <Dashboard />
+            <Dashboard onNavigate={handleTabChange} />
+          </TabsContent>
+
+          <TabsContent value="ui-template" className="mt-0">
+            <PremiumUITemplate />
           </TabsContent>
 
           <TabsContent value="tab-browser" className="mt-0">

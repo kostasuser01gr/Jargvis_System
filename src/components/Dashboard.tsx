@@ -40,7 +40,7 @@ interface RecentActivity {
   icon: React.ReactNode;
 }
 
-export function Dashboard({ onNavigate }: { onNavigate: (tab: string) => void }) {
+export function Dashboard({ onNavigate }: { onNavigate?: (tab: string) => void }) {
   const [metrics, setMetrics] = useState<SystemMetric[]>([
     { label: 'System Health', value: '98%', change: 2, icon: <Activity className="w-5 h-5" />, color: 'text-green-400' },
     { label: 'AI Models', value: 24, change: 3, icon: <Brain className="w-5 h-5" />, color: 'text-blue-400' },
@@ -115,7 +115,7 @@ export function Dashboard({ onNavigate }: { onNavigate: (tab: string) => void })
           {quickActions.map((action, index) => (
             <motion.button
               key={action.id}
-              onClick={() => onNavigate(action.tab)}
+              onClick={() => onNavigate?.(action.tab)}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: index * 0.05 }}
