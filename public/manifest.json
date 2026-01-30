@@ -1,0 +1,20 @@
+{
+  "name": "JARVIS System - Advanced AI Platform",
+  "short_name": "JARVIS",
+  "description": "Advanced AI Development Platform with Quantum Computing, Model Training, and Full-Scale AI Capabilities",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#22d3ee",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/vite.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["productivity", "developer", "ai"],
+  "screenshots": [],
+  "shortcuts": []
+}

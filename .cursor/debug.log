@@ -1,0 +1,4 @@
+{"location":"ThemeContext.tsx:392","message":"useTheme called","data":{"contextDefined":true,"hasApplyTheme":true},"timestamp":1769102664432,"sessionId":"debug-session","runId":"run1","hypothesisId":"C"}
+{"location":"command.tsx:44","message":"CommandDialog mounted","data":{"open":false},"timestamp":1769102664452,"sessionId":"debug-session","runId":"post-fix","hypothesisId":"E"}
+{"location":"App.tsx:117","message":"Rendering ThemeProvider","data":{},"timestamp":1769102667862,"sessionId":"debug-session","runId":"run1","hypothesisId":"D"}
+{"location":"ThemeContext.tsx:392","message":"useTheme called","data":{"contextDefined":true,"hasApplyTheme":true},"timestamp":1769102667864,"sessionId":"debug-session","runId":"run1","hypothesisId":"C"}
