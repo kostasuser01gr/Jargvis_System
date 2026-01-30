@@ -40,17 +40,11 @@ export default function App() {
   // Error handler
   useEffect(() => {
     const handleError = (event: ErrorEvent) => {
-      // #region agent log
-      fetch('http://127.0.0.1:7244/ingest/7769055a-33e5-41ee-95ff-da63c73d21b3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'App.tsx:42',message:'Global error caught',data:{error:event.error?.message,stack:event.error?.stack,filename:event.filename,lineno:event.lineno,colno:event.colno},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-      // #endregion
       console.error('Global error:', event.error);
       setHasError(event.error?.message || 'Unknown error');
     };
 
     const handleRejection = (event: PromiseRejectionEvent) => {
-      // #region agent log
-      fetch('http://127.0.0.1:7244/ingest/7769055a-33e5-41ee-95ff-da63c73d21b3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'App.tsx:47',message:'Unhandled promise rejection',data:{reason:event.reason?.message,stack:event.reason?.stack},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-      // #endregion
       console.error('Unhandled promise rejection:', event.reason);
       setHasError(event.reason?.message || 'Promise rejection');
     };
@@ -121,14 +115,6 @@ export default function App() {
 
   return (
     <ErrorBoundary>
-      {/* #region agent log */}
-      {(() => {
-        try {
-          fetch('http://127.0.0.1:7244/ingest/7769055a-33e5-41ee-95ff-da63c73d21b3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'App.tsx:117',message:'Rendering ThemeProvider',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-        } catch(e) {}
-        return null;
-      })()}
-      {/* #endregion */}
       <ThemeProvider>
         <div className="relative min-h-screen bg-black overflow-hidden">
         {/* Enhanced Animated Background */}

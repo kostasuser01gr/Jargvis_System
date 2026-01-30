@@ -1,9 +1,5 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-// #region agent log
-import * as LucideIcons from 'lucide-react';
-fetch('http://127.0.0.1:7244/ingest/7769055a-33e5-41ee-95ff-da63c73d21b3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'MainInterface.tsx:3',message:'Checking lucide-react imports',data:{hasLayers:'Layers' in LucideIcons,allIcons:Object.keys(LucideIcons).filter(k=>k.includes('Layer')).slice(0,10)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-// #endregion
 import { Mic, Hand, Terminal, Grid3x3, Brain, Gauge, Shield, Target, Satellite, Code, Bot, Server, Palette, Workflow, BarChart3, ScrollText, Settings, Cpu, Users, Blocks, Puzzle, Activity, Stethoscope, Store, Merge, Sparkles, Cloud, CodeSquare, TestTube2, Bug, Zap, Network, Database, Rocket, Sparkles as SparklesIcon, Users as UsersIcon, TreePine, Wrench, Code2, TrendingUp, Scale, Plug, Workflow as WorkflowIcon, Eye, Palette as PaletteIcon, Brain as BrainIcon, Shield as ShieldIcon, FlaskConical, Accessibility, Building2, Layers } from 'lucide-react';
 import { ScanningGrid } from './ScanningGrid';
 import { HUDInterface } from './HUDInterface';
@@ -173,11 +169,6 @@ export function MainInterface({
   };
 
   // Comprehensive tab list for search
-  // #region agent log
-  useEffect(() => {
-    fetch('http://127.0.0.1:7244/ingest/7769055a-33e5-41ee-95ff-da63c73d21b3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'MainInterface.tsx:175',message:'Component mounted - checking Layers in LucideIcons',data:{hasLayers:'Layers' in LucideIcons,availableLayerIcons:Object.keys(LucideIcons).filter(k=>k.toLowerCase().includes('layer')).slice(0,5)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-  }, []);
-  // #endregion
   const allTabs: TabSearchInfo[] = [
     { id: 'dashboard', label: 'Dashboard', value: 'dashboard', category: 'Core', description: 'Home and overview', icon: <Grid3x3 className="w-4 h-4" />, shortcut: '⌘H' },
     { id: 'tab-browser', label: 'Tab Browser', value: 'tab-browser', category: 'Core', description: 'Browse all tabs by category', icon: <Layers className="w-4 h-4" />, shortcut: '⌘B' },
