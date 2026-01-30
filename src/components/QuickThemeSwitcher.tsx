@@ -14,9 +14,7 @@ export function QuickThemeSwitcher() {
   let themeContext;
   try {
     themeContext = useTheme();
-    fetch('http://127.0.0.1:7244/ingest/7769055a-33e5-41ee-95ff-da63c73d21b3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'QuickThemeSwitcher.tsx:12',message:'QuickThemeSwitcher useTheme called',data:{hasContext:themeContext !== undefined,hasApplyTheme:themeContext?.applyTheme !== undefined},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
   } catch(e: any) {
-    fetch('http://127.0.0.1:7244/ingest/7769055a-33e5-41ee-95ff-da63c73d21b3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'QuickThemeSwitcher.tsx:12',message:'Error in QuickThemeSwitcher useTheme',data:{error:e?.message,stack:e?.stack},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
     throw e;
   }
   const { currentTheme, themes, applyTheme, exportTheme, importTheme } = themeContext;

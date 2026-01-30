@@ -18,7 +18,6 @@ if (typeof window !== 'undefined') {
   
   // Store in window for cmdk to access if needed
   (window as any).__nextThemes = mockThemeProvider;
-  fetch('http://127.0.0.1:7244/ingest/7769055a-33e5-41ee-95ff-da63c73d21b3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'main.tsx:6',message:'Created next-themes mock in main.tsx',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
 }
 // #endregion
 
@@ -26,10 +25,8 @@ if (typeof window !== 'undefined') {
   // #region agent log
   // Global error handler before React mounts
   window.addEventListener('error', (event) => {
-    fetch('http://127.0.0.1:7244/ingest/7769055a-33e5-41ee-95ff-da63c73d21b3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'main.tsx:6',message:'Pre-React error caught',data:{error:event.error?.message,stack:event.error?.stack,filename:event.filename,lineno:event.lineno},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
   });
   window.addEventListener('unhandledrejection', (event) => {
-    fetch('http://127.0.0.1:7244/ingest/7769055a-33e5-41ee-95ff-da63c73d21b3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'main.tsx:10',message:'Pre-React unhandled rejection',data:{reason:event.reason?.message,stack:event.reason?.stack},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
   });
   // #endregion
   

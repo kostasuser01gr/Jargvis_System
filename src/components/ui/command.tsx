@@ -21,13 +21,6 @@ function Command({
   className,
   ...props
 }: React.ComponentProps<typeof CommandPrimitive>) {
-  // #region agent log
-  // Log Command component render
-  React.useEffect(() => {
-    fetch('http://127.0.0.1:7244/ingest/7769055a-33e5-41ee-95ff-da63c73d21b3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'command.tsx:37',message:'Command component rendering',data:{hasProps:!!props},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
-  }, []);
-  // #endregion
-  
   return (
     <CommandPrimitive
       data-slot="command"
@@ -54,7 +47,6 @@ function CommandDialog({
   const [mounted, setMounted] = React.useState(false);
   React.useEffect(() => {
     setMounted(true);
-    fetch('http://127.0.0.1:7244/ingest/7769055a-33e5-41ee-95ff-da63c73d21b3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'command.tsx:44',message:'CommandDialog mounted',data:{open:props.open},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'E'})}).catch(()=>{});
   }, [props.open]);
   // #endregion
   

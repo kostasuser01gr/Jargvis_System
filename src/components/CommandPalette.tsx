@@ -111,12 +111,6 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   // #region agent log
   // Wrap in error boundary to catch cmdk subscribe errors
   const [commandError, setCommandError] = useState(false);
-  
-  useEffect(() => {
-    if (commandError) {
-      fetch('http://127.0.0.1:7244/ingest/7769055a-33e5-41ee-95ff-da63c73d21b3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'CommandPalette.tsx:111',message:'Command error state set',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
-    }
-  }, [commandError]);
   // #endregion
   
   if (commandError) {
