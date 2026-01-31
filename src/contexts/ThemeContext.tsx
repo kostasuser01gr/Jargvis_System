@@ -98,6 +98,28 @@ const PRESET_THEMES: Theme[] = [
     preset: true
   },
   {
+    id: 'neon-vibrant',
+    name: 'Neon Vibrant',
+    description: 'Neon accents tuned for readability',
+    colors: {
+      primary: '#d946ef',
+      secondary: '#38bdf8',
+      accent: '#facc15',
+      background: '#0b0f1a',
+      foreground: '#f8fafc',
+      glow: '#d946ef',
+      border: '#38bdf8'
+    },
+    effects: {
+      blur: 20,
+      glow: 25,
+      animation: true,
+      particles: true,
+      gridPattern: true
+    },
+    preset: true
+  },
+  {
     id: 'purple-nebula',
     name: 'Purple Nebula',
     description: 'Deep space purple theme',
@@ -231,9 +253,22 @@ const PRESET_THEMES: Theme[] = [
   }
 ];
 
+/** ThemeMode represents the user's selected theme preference. */
+type ThemeMode = 'light' | 'dark' | 'system';
+
+const THEME_MODE_STORAGE_KEY = 'jarvis-theme-mode';
+// Input background mix keeps fields legible while preserving theme tint.
+// 85% is used for dark themes, 92% for light themes to maintain contrast.
+const INPUT_BG_MIX_DARK = 85;
+const INPUT_BG_MIX_LIGHT = 92;
+const INPUT_BG_DARK_FORMULA = `color-mix(in oklab, var(--background) ${INPUT_BG_MIX_DARK}%, white)`;
+const INPUT_BG_LIGHT_FORMULA = `color-mix(in oklab, var(--background) ${INPUT_BG_MIX_LIGHT}%, black)`;
+
 interface ThemeContextType {
   currentTheme: Theme;
   themes: Theme[];
+  themeMode: ThemeMode;
+  resolvedThemeMode: 'light' | 'dark';
   applyTheme: (themeId: string) => void;
   createCustomTheme: (theme: Omit<Theme, 'id' | 'preset'>) => void;
   updateTheme: (themeId: string, updates: Partial<Theme>) => void;
@@ -241,9 +276,18 @@ interface ThemeContextType {
   exportTheme: (themeId: string) => void;
   importTheme: (themeData: Theme) => void;
   resetToDefault: () => void;
+  setThemeMode: (mode: ThemeMode) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+
+const getSystemThemeMode = () => {
+  if (typeof window === 'undefined' || !window.matchMedia) {
+    // Default to light in non-browser or unsupported environments.
+    return 'light';
+  }
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+};
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [themes, setThemes] = useState<Theme[]>(() => {
@@ -274,9 +318,49 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     return DEFAULT_THEME;
   });
 
+  const [themeMode, setThemeMode] = useState<ThemeMode>(() => {
+    const saved = localStorage.getItem(THEME_MODE_STORAGE_KEY) as ThemeMode | null;
+    if (saved === 'light' || saved === 'dark' || saved === 'system') {
+      return saved;
+    }
+    return 'system';
+  });
+
+  const [resolvedThemeMode, setResolvedThemeMode] = useState<'light' | 'dark'>(() => {
+    const saved = localStorage.getItem(THEME_MODE_STORAGE_KEY) as ThemeMode | null;
+    const initialMode =
+      saved === 'light' || saved === 'dark' || saved === 'system' ? saved : 'system';
+    return initialMode === 'system' ? getSystemThemeMode() : initialMode;
+  });
+
+  useEffect(() => {
+    localStorage.setItem(THEME_MODE_STORAGE_KEY, themeMode);
+  }, [themeMode]);
+
+  useEffect(() => {
+    if (themeMode !== 'system') {
+      setResolvedThemeMode(themeMode);
+      return;
+    }
+
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = (event: MediaQueryListEvent) => {
+      setResolvedThemeMode(event.matches ? 'dark' : 'light');
+    };
+
+    setResolvedThemeMode(media.matches ? 'dark' : 'light');
+    media.addEventListener('change', handleChange);
+    return () => {
+      media.removeEventListener('change', handleChange);
+    };
+  }, [themeMode]);
+
   // Apply theme to document
   useEffect(() => {
     const root = document.documentElement;
+    root.classList.toggle('dark', resolvedThemeMode === 'dark');
+    root.style.colorScheme = resolvedThemeMode;
+
     root.style.setProperty('--theme-primary', currentTheme.colors.primary);
     root.style.setProperty('--theme-secondary', currentTheme.colors.secondary);
     root.style.setProperty('--theme-accent', currentTheme.colors.accent);
@@ -284,13 +368,29 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     root.style.setProperty('--theme-foreground', currentTheme.colors.foreground);
     root.style.setProperty('--theme-glow', currentTheme.colors.glow || currentTheme.colors.primary);
     root.style.setProperty('--theme-border', currentTheme.colors.border || currentTheme.colors.primary);
+    root.style.setProperty('--background', currentTheme.colors.background);
+    root.style.setProperty('--foreground', currentTheme.colors.foreground);
+    root.style.setProperty('--primary', currentTheme.colors.primary);
+    root.style.setProperty('--secondary', currentTheme.colors.secondary);
+    root.style.setProperty('--accent', currentTheme.colors.accent);
+    root.style.setProperty('--border', currentTheme.colors.border || currentTheme.colors.primary);
+    root.style.setProperty('--input', currentTheme.colors.border || currentTheme.colors.primary);
+    root.style.setProperty('--ring', currentTheme.colors.accent);
+    root.style.setProperty('--card', currentTheme.colors.background);
+    root.style.setProperty('--popover', currentTheme.colors.background);
+    root.style.setProperty(
+      '--input-background',
+      resolvedThemeMode === 'dark'
+        ? INPUT_BG_DARK_FORMULA
+        : INPUT_BG_LIGHT_FORMULA,
+    );
     
     // Save to localStorage
     localStorage.setItem('jarvis-current-theme', JSON.stringify({
       id: currentTheme.id,
       name: currentTheme.name
     }));
-  }, [currentTheme]);
+  }, [currentTheme, resolvedThemeMode]);
 
   // Save custom themes to localStorage
   useEffect(() => {
@@ -375,13 +475,16 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       value={{
         currentTheme,
         themes,
+        themeMode,
+        resolvedThemeMode,
         applyTheme,
         createCustomTheme,
         updateTheme,
         deleteTheme,
         exportTheme,
         importTheme,
-        resetToDefault
+        resetToDefault,
+        setThemeMode,
       }}
     >
       {children}

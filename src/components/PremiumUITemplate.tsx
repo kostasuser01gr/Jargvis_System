@@ -1266,4 +1266,3 @@ export function PremiumUITemplate() {
     </div>
   );
 }
-import { Calendar } from './ui/calendar';
