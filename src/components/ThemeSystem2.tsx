@@ -179,7 +179,13 @@ export function ThemeSystem2() {
               variant="outline"
               className="border-pink-500/50 text-pink-400 hover:bg-pink-500/20"
               onClick={() => {
-                const nextMode = previewMode === 'dark' ? 'light' : previewMode === 'light' ? 'auto' : 'dark';
+                const nextModeMap: Record<'dark' | 'light' | 'auto', 'dark' | 'light' | 'auto'> =
+                  {
+                    dark: 'light',
+                    light: 'auto',
+                    auto: 'dark',
+                  };
+                const nextMode = nextModeMap[previewMode];
                 setPreviewMode(nextMode);
                 setThemeMode(nextMode === 'auto' ? 'system' : nextMode);
               }}

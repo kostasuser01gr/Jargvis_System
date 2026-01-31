@@ -98,17 +98,17 @@ const PRESET_THEMES: Theme[] = [
     preset: true
   },
   {
-    id: 'neon',
-    name: 'Neon',
-    description: 'Vibrant neon colors',
+    id: 'neon-vibrant',
+    name: 'Neon Vibrant',
+    description: 'Neon accents tuned for readability',
     colors: {
-      primary: '#ff00ff',
-      secondary: '#00ffff',
-      accent: '#ffff00',
-      background: '#0a0a0a',
-      foreground: '#ffffff',
-      glow: '#ff00ff',
-      border: '#00ffff'
+      primary: '#d946ef',
+      secondary: '#38bdf8',
+      accent: '#facc15',
+      background: '#0b0f1a',
+      foreground: '#f8fafc',
+      glow: '#d946ef',
+      border: '#38bdf8'
     },
     effects: {
       blur: 20,
@@ -253,6 +253,17 @@ const PRESET_THEMES: Theme[] = [
   }
 ];
 
+/** ThemeMode represents the user's selected theme preference. */
+type ThemeMode = 'light' | 'dark' | 'system';
+
+const THEME_MODE_STORAGE_KEY = 'jarvis-theme-mode';
+// Input background mix keeps fields legible while preserving theme tint.
+// 85% is used for dark themes, 92% for light themes to maintain contrast.
+const INPUT_BG_MIX_DARK = 85;
+const INPUT_BG_MIX_LIGHT = 92;
+const INPUT_BG_DARK_FORMULA = `color-mix(in oklab, var(--background) ${INPUT_BG_MIX_DARK}%, white)`;
+const INPUT_BG_LIGHT_FORMULA = `color-mix(in oklab, var(--background) ${INPUT_BG_MIX_LIGHT}%, black)`;
+
 interface ThemeContextType {
   currentTheme: Theme;
   themes: Theme[];
@@ -270,12 +281,9 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-type ThemeMode = 'light' | 'dark' | 'system';
-
-const THEME_MODE_STORAGE_KEY = 'jarvis-theme-mode';
-
 const getSystemThemeMode = () => {
   if (typeof window === 'undefined' || !window.matchMedia) {
+    // Default to light in non-browser or unsupported environments.
     return 'light';
   }
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
@@ -319,7 +327,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   });
 
   const [resolvedThemeMode, setResolvedThemeMode] = useState<'light' | 'dark'>(() => {
-    return themeMode === 'system' ? getSystemThemeMode() : themeMode;
+    const saved = localStorage.getItem(THEME_MODE_STORAGE_KEY) as ThemeMode | null;
+    const initialMode =
+      saved === 'light' || saved === 'dark' || saved === 'system' ? saved : 'system';
+    return initialMode === 'system' ? getSystemThemeMode() : initialMode;
   });
 
   useEffect(() => {
@@ -338,11 +349,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     };
 
     setResolvedThemeMode(media.matches ? 'dark' : 'light');
-    media.addEventListener?.('change', handleChange);
-    media.addListener?.(handleChange);
+    media.addEventListener('change', handleChange);
     return () => {
-      media.removeEventListener?.('change', handleChange);
-      media.removeListener?.(handleChange);
+      media.removeEventListener('change', handleChange);
     };
   }, [themeMode]);
 
@@ -372,8 +381,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     root.style.setProperty(
       '--input-background',
       resolvedThemeMode === 'dark'
-        ? 'color-mix(in oklab, var(--background) 85%, white)'
-        : 'color-mix(in oklab, var(--background) 92%, black)',
+        ? INPUT_BG_DARK_FORMULA
+        : INPUT_BG_LIGHT_FORMULA,
     );
     
     // Save to localStorage
