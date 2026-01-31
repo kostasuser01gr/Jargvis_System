@@ -1,6 +1,7 @@
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
+import "./styles/globals.css";
 
 // #region agent log
 // Fix for cmdk trying to subscribe to next-themes

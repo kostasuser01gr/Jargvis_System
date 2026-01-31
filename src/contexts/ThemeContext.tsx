@@ -98,6 +98,28 @@ const PRESET_THEMES: Theme[] = [
     preset: true
   },
   {
+    id: 'neon',
+    name: 'Neon',
+    description: 'Vibrant neon colors',
+    colors: {
+      primary: '#ff00ff',
+      secondary: '#00ffff',
+      accent: '#ffff00',
+      background: '#0a0a0a',
+      foreground: '#ffffff',
+      glow: '#ff00ff',
+      border: '#00ffff'
+    },
+    effects: {
+      blur: 20,
+      glow: 25,
+      animation: true,
+      particles: true,
+      gridPattern: true
+    },
+    preset: true
+  },
+  {
     id: 'purple-nebula',
     name: 'Purple Nebula',
     description: 'Deep space purple theme',
@@ -234,6 +256,8 @@ const PRESET_THEMES: Theme[] = [
 interface ThemeContextType {
   currentTheme: Theme;
   themes: Theme[];
+  themeMode: ThemeMode;
+  resolvedThemeMode: 'light' | 'dark';
   applyTheme: (themeId: string) => void;
   createCustomTheme: (theme: Omit<Theme, 'id' | 'preset'>) => void;
   updateTheme: (themeId: string, updates: Partial<Theme>) => void;
@@ -241,9 +265,21 @@ interface ThemeContextType {
   exportTheme: (themeId: string) => void;
   importTheme: (themeData: Theme) => void;
   resetToDefault: () => void;
+  setThemeMode: (mode: ThemeMode) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+
+type ThemeMode = 'light' | 'dark' | 'system';
+
+const THEME_MODE_STORAGE_KEY = 'jarvis-theme-mode';
+
+const getSystemThemeMode = () => {
+  if (typeof window === 'undefined' || !window.matchMedia) {
+    return 'light';
+  }
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+};
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [themes, setThemes] = useState<Theme[]>(() => {
@@ -274,9 +310,48 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     return DEFAULT_THEME;
   });
 
+  const [themeMode, setThemeMode] = useState<ThemeMode>(() => {
+    const saved = localStorage.getItem(THEME_MODE_STORAGE_KEY) as ThemeMode | null;
+    if (saved === 'light' || saved === 'dark' || saved === 'system') {
+      return saved;
+    }
+    return 'system';
+  });
+
+  const [resolvedThemeMode, setResolvedThemeMode] = useState<'light' | 'dark'>(() => {
+    return themeMode === 'system' ? getSystemThemeMode() : themeMode;
+  });
+
+  useEffect(() => {
+    localStorage.setItem(THEME_MODE_STORAGE_KEY, themeMode);
+  }, [themeMode]);
+
+  useEffect(() => {
+    if (themeMode !== 'system') {
+      setResolvedThemeMode(themeMode);
+      return;
+    }
+
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = (event: MediaQueryListEvent) => {
+      setResolvedThemeMode(event.matches ? 'dark' : 'light');
+    };
+
+    setResolvedThemeMode(media.matches ? 'dark' : 'light');
+    media.addEventListener?.('change', handleChange);
+    media.addListener?.(handleChange);
+    return () => {
+      media.removeEventListener?.('change', handleChange);
+      media.removeListener?.(handleChange);
+    };
+  }, [themeMode]);
+
   // Apply theme to document
   useEffect(() => {
     const root = document.documentElement;
+    root.classList.toggle('dark', resolvedThemeMode === 'dark');
+    root.style.colorScheme = resolvedThemeMode;
+
     root.style.setProperty('--theme-primary', currentTheme.colors.primary);
     root.style.setProperty('--theme-secondary', currentTheme.colors.secondary);
     root.style.setProperty('--theme-accent', currentTheme.colors.accent);
@@ -284,13 +359,29 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     root.style.setProperty('--theme-foreground', currentTheme.colors.foreground);
     root.style.setProperty('--theme-glow', currentTheme.colors.glow || currentTheme.colors.primary);
     root.style.setProperty('--theme-border', currentTheme.colors.border || currentTheme.colors.primary);
+    root.style.setProperty('--background', currentTheme.colors.background);
+    root.style.setProperty('--foreground', currentTheme.colors.foreground);
+    root.style.setProperty('--primary', currentTheme.colors.primary);
+    root.style.setProperty('--secondary', currentTheme.colors.secondary);
+    root.style.setProperty('--accent', currentTheme.colors.accent);
+    root.style.setProperty('--border', currentTheme.colors.border || currentTheme.colors.primary);
+    root.style.setProperty('--input', currentTheme.colors.border || currentTheme.colors.primary);
+    root.style.setProperty('--ring', currentTheme.colors.accent);
+    root.style.setProperty('--card', currentTheme.colors.background);
+    root.style.setProperty('--popover', currentTheme.colors.background);
+    root.style.setProperty(
+      '--input-background',
+      resolvedThemeMode === 'dark'
+        ? 'color-mix(in oklab, var(--background) 85%, white)'
+        : 'color-mix(in oklab, var(--background) 92%, black)',
+    );
     
     // Save to localStorage
     localStorage.setItem('jarvis-current-theme', JSON.stringify({
       id: currentTheme.id,
       name: currentTheme.name
     }));
-  }, [currentTheme]);
+  }, [currentTheme, resolvedThemeMode]);
 
   // Save custom themes to localStorage
   useEffect(() => {
@@ -375,13 +466,16 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       value={{
         currentTheme,
         themes,
+        themeMode,
+        resolvedThemeMode,
         applyTheme,
         createCustomTheme,
         updateTheme,
         deleteTheme,
         exportTheme,
         importTheme,
-        resetToDefault
+        resetToDefault,
+        setThemeMode,
       }}
     >
       {children}

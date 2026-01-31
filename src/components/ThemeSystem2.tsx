@@ -9,6 +9,7 @@ import { Slider } from './ui/slider';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { ScrollArea } from './ui/scroll-area';
 import { toast } from 'sonner';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface Theme {
   id: string;
@@ -43,6 +44,7 @@ interface CustomTheme {
 }
 
 export function ThemeSystem2() {
+  const { applyTheme: applyStoredTheme, setThemeMode } = useTheme();
   const [themes, setThemes] = useState<Theme[]>([
     {
       id: 'cyberpunk',
@@ -123,12 +125,7 @@ export function ThemeSystem2() {
     setSelectedTheme(themeId);
     const theme = themes.find(t => t.id === themeId);
     if (theme) {
-      // Apply theme to document
-      document.documentElement.style.setProperty('--theme-primary', theme.colors.primary);
-      document.documentElement.style.setProperty('--theme-secondary', theme.colors.secondary);
-      document.documentElement.style.setProperty('--theme-accent', theme.colors.accent);
-      document.documentElement.style.setProperty('--theme-background', theme.colors.background);
-      document.documentElement.style.setProperty('--theme-foreground', theme.colors.foreground);
+      applyStoredTheme(theme.id);
       toast.success(`Applied ${theme.name} theme`);
     }
   };
@@ -181,7 +178,11 @@ export function ThemeSystem2() {
             <Button
               variant="outline"
               className="border-pink-500/50 text-pink-400 hover:bg-pink-500/20"
-              onClick={() => setPreviewMode(previewMode === 'dark' ? 'light' : previewMode === 'light' ? 'auto' : 'dark')}
+              onClick={() => {
+                const nextMode = previewMode === 'dark' ? 'light' : previewMode === 'light' ? 'auto' : 'dark';
+                setPreviewMode(nextMode);
+                setThemeMode(nextMode === 'auto' ? 'system' : nextMode);
+              }}
             >
               {previewMode === 'dark' ? <Moon className="w-4 h-4 mr-2" /> : previewMode === 'light' ? <Sun className="w-4 h-4 mr-2" /> : <Monitor className="w-4 h-4 mr-2" />}
               {previewMode}

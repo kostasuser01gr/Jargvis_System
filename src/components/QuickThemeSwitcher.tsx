@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Palette, Check, Settings, Download, Upload, Sparkles } from 'lucide-react';
+import { Palette, Check, Settings, Download, Upload, Sparkles, Sun, Moon, Monitor } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Button } from './ui/button';
 import { ScrollArea } from './ui/scroll-area';
@@ -17,7 +17,16 @@ export function QuickThemeSwitcher() {
   } catch(e: any) {
     throw e;
   }
-  const { currentTheme, themes, applyTheme, exportTheme, importTheme } = themeContext;
+  const {
+    currentTheme,
+    themes,
+    applyTheme,
+    exportTheme,
+    importTheme,
+    themeMode,
+    resolvedThemeMode,
+    setThemeMode,
+  } = themeContext;
   // #endregion
   const [searchQuery, setSearchQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
@@ -121,6 +130,45 @@ export function QuickThemeSwitcher() {
           </div>
 
           <Separator className="bg-cyan-500/20" />
+
+          <div className="space-y-3">
+            <div className="text-xs text-cyan-500 font-semibold uppercase tracking-wide">Theme Mode</div>
+            <div className="grid grid-cols-3 gap-2">
+              <Button
+                type="button"
+                variant={themeMode === 'light' ? 'secondary' : 'ghost'}
+                size="sm"
+                className="h-8 gap-2 text-cyan-300"
+                onClick={() => setThemeMode('light')}
+              >
+                <Sun className="h-4 w-4" />
+                Light
+              </Button>
+              <Button
+                type="button"
+                variant={themeMode === 'dark' ? 'secondary' : 'ghost'}
+                size="sm"
+                className="h-8 gap-2 text-cyan-300"
+                onClick={() => setThemeMode('dark')}
+              >
+                <Moon className="h-4 w-4" />
+                Dark
+              </Button>
+              <Button
+                type="button"
+                variant={themeMode === 'system' ? 'secondary' : 'ghost'}
+                size="sm"
+                className="h-8 gap-2 text-cyan-300"
+                onClick={() => setThemeMode('system')}
+              >
+                <Monitor className="h-4 w-4" />
+                System
+              </Button>
+            </div>
+            <div className="text-xs text-cyan-600">
+              Active: <span className="text-cyan-300">{resolvedThemeMode}</span>
+            </div>
+          </div>
 
           {/* Theme List */}
           <ScrollArea className="h-[400px]">
